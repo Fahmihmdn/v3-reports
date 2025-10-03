@@ -1,6 +1,6 @@
 # Reports Dashboard Frontend
 
-A Vite + React + TypeScript SPA that renders a reports dashboard with filters, summary cards, and a detailed table. Styling is provided by Tailwind CSS. The app consumes the `/api/reports` endpoint from the PHP backend.
+A Vite + React + TypeScript single-page app that renders the loan servicing control tower with borrower filters, portfolio summary cards, and a detailed repayment table. Styling is provided by Tailwind CSS. The app consumes the `/api/reports` endpoint from the PHP backend.
 
 ## Getting started
 
@@ -20,7 +20,7 @@ By default the dev server runs on `http://localhost:5173` and proxies API reques
 
 ## Project structure
 
-- `src/App.tsx` – layout composition for the page.
+- `src/App.tsx` – layout composition for the control tower page.
 - `src/components` – stateless UI building blocks.
-- `src/hooks/useReports.ts` – data fetching + demo fallback logic.
-- `src/types` – shared TypeScript types for report data.
+- `src/hooks/useReports.ts` – data fetching and offline fallback logic.
+- `src/types` – shared TypeScript types for portfolio data.

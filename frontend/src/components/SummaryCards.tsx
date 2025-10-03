@@ -5,7 +5,12 @@ interface SummaryCardsProps {
   isLoading: boolean;
 }
 
-const formatter = new Intl.NumberFormat('en-US');
+const numberFormatter = new Intl.NumberFormat('en-SG');
+const currencyFormatter = new Intl.NumberFormat('en-SG', {
+  style: 'currency',
+  currency: 'SGD',
+  maximumFractionDigits: 0
+});
 
 function SkeletonCard() {
   return (
@@ -31,21 +36,24 @@ function SummaryCards({ metrics, isLoading }: SummaryCardsProps) {
   return (
     <section className="grid gap-4 md:grid-cols-3">
       <article className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Reports</p>
-        <p className="mt-2 text-3xl font-bold text-slate-900">{formatter.format(metrics.totalReports)}</p>
-        <p className="mt-2 text-xs text-slate-500">Across all statuses for the selected period</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Active Borrowers</p>
+        <p className="mt-2 text-3xl font-bold text-slate-900">{numberFormatter.format(metrics.totalBorrowers)}</p>
+        <p className="mt-2 text-xs text-slate-500">Unique borrowers with open applications</p>
       </article>
 
       <article className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Avg. Resolution Time</p>
-        <p className="mt-2 text-3xl font-bold text-slate-900">{metrics.averageResolutionTime}</p>
-        <p className="mt-2 text-xs text-slate-500">Time to close resolved reports</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Outstanding Portfolio</p>
+        <p className="mt-2 text-3xl font-bold text-slate-900">{currencyFormatter.format(metrics.portfolioBalance)}</p>
+        <p className="mt-2 text-xs text-slate-500">Remaining principal across disbursed loans</p>
       </article>
 
       <article className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">On-time Delivery</p>
-        <p className="mt-2 text-3xl font-bold text-slate-900">{metrics.onTimePercentage}%</p>
-        <p className="mt-2 text-xs text-slate-500">Reports completed before their due date</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upcoming Payments</p>
+        <p className="mt-2 text-3xl font-bold text-slate-900">{numberFormatter.format(metrics.upcomingPayments)}</p>
+        <p className="mt-2 flex items-center justify-between text-xs text-slate-500">
+          <span>Scheduled in the next 30 days</span>
+          <span className="text-emerald-600">{metrics.onTrackPercentage}% on track</span>
+        </p>
       </article>
     </section>
   );

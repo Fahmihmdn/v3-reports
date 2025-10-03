@@ -1,6 +1,6 @@
 # LoanApp v3 Reports Prototype
 
-This repository contains a standalone reports experience that will later be integrated into the main LoanApp v3 product. It is composed of a modern TypeScript frontend and a lightweight PHP backend.
+This repository contains a standalone loan servicing dashboard that will later be integrated into the main LoanApp v3 product. It is composed of a modern TypeScript frontend and a lightweight PHP backend that serves aggregated portfolio data.
 
 ## Project structure
 
@@ -28,14 +28,20 @@ cp .env.example .env
 php -S localhost:8080 -t public
 ```
 
-The backend will respond to `GET http://localhost:8080/api/reports`. If a database connection cannot be established the API returns demo data so the dashboard continues to function.
+The backend responds to `GET http://localhost:8080/api/reports`. If a database connection cannot be established the API returns demo data so the dashboard continues to function.
 
-### Database (optional)
+### Database seed
 
-Use the SQL migration in `backend/database/migrations` to create the `reports` table. Populate it with your own data to drive the dashboard.
+Run the SQL migration in `backend/database/migrations` to create the borrower, application, disbursement, repayment, payment schedule, call log, and audit log tables along with sample seed data.
+
+```sql
+$(cat backend/database/migrations/001_create_reports_table.sql)
+```
+
+Once applied, update the `.env` file with your database credentials so the API can compute real metrics from the seeded data.
 
 ## Next steps
 
 - Integrate authentication and authorization.
-- Replace demo data with live database queries.
+- Replace demo data with live production queries.
 - Wire the module into the primary LoanApp v3 application shell.

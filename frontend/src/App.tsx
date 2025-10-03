@@ -22,14 +22,14 @@ function App() {
       <header className="bg-white shadow">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-500">Operations</p>
-            <h1 className="text-3xl font-bold text-slate-900">Monthly Reporting Overview</h1>
+            <p className="text-sm font-semibold uppercase tracking-wide text-brand-500">Collections</p>
+            <h1 className="text-3xl font-bold text-slate-900">Loan Servicing Control Tower</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-500">
-              Monitor key performance indicators, statuses, and anomalies in a single, customizable view.
+              Track portfolio health, upcoming instalments, and repayment progress across every borrower in real time.
             </p>
           </div>
           <button className="inline-flex items-center justify-center rounded-md bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-500">
-            Export Report
+            Export summary
           </button>
         </div>
       </header>

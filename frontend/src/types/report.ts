@@ -1,23 +1,31 @@
-export type ReportStatus = 'open' | 'in_progress' | 'resolved' | 'blocked';
+export type PortfolioStatus = 'current' | 'due_soon' | 'overdue' | 'completed';
 
 export interface ReportRow {
   id: string;
-  title: string;
-  description: string;
-  status: ReportStatus;
+  borrowerId: number;
+  borrowerName: string;
+  accountNumber: string;
+  loanAmount: number;
+  disbursedAmount: number;
+  totalRepaid: number;
+  outstandingBalance: number;
+  nextPaymentDue: string | null;
+  lastPaymentDate: string | null;
+  lastPaymentAmount: number | null;
+  status: PortfolioStatus;
   statusLabel: string;
-  dueDate: string;
-  progress: number;
-  owner: {
-    name: string;
-    role: string;
+  delinquencyDays: number;
+  contact: {
+    phone: string | null;
+    email: string | null;
   };
 }
 
 export interface ReportSummary {
-  totalReports: number;
-  averageResolutionTime: string;
-  onTimePercentage: number;
+  totalBorrowers: number;
+  portfolioBalance: number;
+  upcomingPayments: number;
+  onTrackPercentage: number;
 }
 
 export interface ReportResponse {
@@ -29,6 +37,6 @@ export interface ReportResponse {
 
 export interface ReportFiltersState {
   search: string;
-  status: ReportStatus | 'all';
+  status: PortfolioStatus | 'all';
   period: '7d' | '30d' | '90d';
 }

@@ -7,17 +7,17 @@ interface ReportFiltersProps {
 }
 
 const periods: Record<ReportFiltersState['period'], string> = {
-  '7d': 'Last 7 days',
-  '30d': 'Last 30 days',
-  '90d': 'Last 90 days'
+  '7d': '± 7 days',
+  '30d': '± 30 days',
+  '90d': '± 90 days'
 };
 
 const statuses: Array<{ value: ReportFiltersState['status']; label: string }> = [
-  { value: 'all', label: 'All statuses' },
-  { value: 'open', label: 'Open' },
-  { value: 'in_progress', label: 'In progress' },
-  { value: 'resolved', label: 'Resolved' },
-  { value: 'blocked', label: 'Blocked' }
+  { value: 'all', label: 'All health states' },
+  { value: 'current', label: 'On track' },
+  { value: 'due_soon', label: 'Due soon' },
+  { value: 'overdue', label: 'Overdue' },
+  { value: 'completed', label: 'Completed' }
 ];
 
 function ReportFilters({ filters, onChange }: ReportFiltersProps) {
@@ -46,7 +46,7 @@ function ReportFilters({ filters, onChange }: ReportFiltersProps) {
           <input
             id="search"
             type="search"
-            placeholder="Search by report title, owner, or tag"
+            placeholder="Search by borrower, account number, or phone"
             value={filters.search}
             onChange={handleTextChange}
             className="block w-full min-w-0 flex-1 rounded-r-md border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
@@ -56,7 +56,7 @@ function ReportFilters({ filters, onChange }: ReportFiltersProps) {
 
       <div>
         <label htmlFor="status" className="block text-sm font-medium text-slate-700">
-          Status
+          Loan health
         </label>
         <select
           id="status"
@@ -74,7 +74,7 @@ function ReportFilters({ filters, onChange }: ReportFiltersProps) {
 
       <div>
         <label htmlFor="period" className="block text-sm font-medium text-slate-700">
-          Period
+          Scheduling window
         </label>
         <select
           id="period"
