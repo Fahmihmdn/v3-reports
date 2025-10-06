@@ -64,6 +64,14 @@ function App() {
     return reports.find((report) => report.id === selectedReportId) ?? null;
   }, [selectedReportId]);
 
+  const isInvalidRange = useMemo(() => {
+    if (!parameters.startDate || !parameters.endDate) {
+      return false;
+    }
+
+    return new Date(parameters.startDate) > new Date(parameters.endDate);
+  }, [parameters.endDate, parameters.startDate]);
+
   const handleSelectReport = (reportId: string) => {
     setSelectedReportId(reportId);
     setParameters(createDefaultParameters());
@@ -80,11 +88,12 @@ function App() {
   };
 
   const handleRunReport = () => {
-    if (!selectedReport) {
+    if (!selectedReport || isInvalidRange) {
       return;
     }
 
-    const { startDate, endDate, keyword } = parameters;
+    const { startDate, endDate } = parameters;
+    const keyword = parameters.keyword?.trim();
     const summaryParts = [`Date range: ${startDate || '—'} to ${endDate || '—'}`];
 
     if (keyword) {
@@ -120,6 +129,7 @@ function App() {
             <ReportParameters
               report={selectedReport}
               parameters={parameters}
+              isInvalidRange={isInvalidRange}
               onChange={handleParameterChange}
               onRun={handleRunReport}
               onReset={handleReset}

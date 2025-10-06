@@ -1,23 +1,15 @@
-import { useMemo } from 'react';
 import type { ReportDefinition, ReportParameterState } from '../types/report';
 
 interface ReportParametersProps {
   report: ReportDefinition | null;
   parameters: ReportParameterState;
+  isInvalidRange: boolean;
   onChange: (update: Partial<ReportParameterState>) => void;
   onRun: () => void;
   onReset: () => void;
 }
 
-export function ReportParameters({ report, parameters, onChange, onRun, onReset }: ReportParametersProps) {
-  const isInvalidRange = useMemo(() => {
-    if (!parameters.startDate || !parameters.endDate) {
-      return false;
-    }
-
-    return new Date(parameters.startDate) > new Date(parameters.endDate);
-  }, [parameters.startDate, parameters.endDate]);
-
+export function ReportParameters({ report, parameters, isInvalidRange, onChange, onRun, onReset }: ReportParametersProps) {
   if (!report) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">
