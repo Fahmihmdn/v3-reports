@@ -67,47 +67,8 @@ export function ReportParameters({ report, parameters, onChange, onRun, onReset 
 
         <fieldset className="grid gap-4 rounded-lg border border-slate-200 p-4">
           <legend className="text-sm font-medium text-slate-700">Filters</legend>
-
           <label className="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Loan status</span>
-            <select
-              value={parameters.status}
-              onChange={(event) => onChange({ status: event.target.value as ReportParameterState['status'] })}
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-            >
-              <option value="all">All statuses</option>
-              <option value="current">Current</option>
-              <option value="due_soon">Due soon</option>
-              <option value="overdue">Overdue</option>
-              <option value="completed">Completed</option>
-            </select>
-          </label>
-
-          <label className="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Minimum loan amount</span>
-            <input
-              type="number"
-              min={0}
-              step="100"
-              placeholder="e.g. 5000"
-              value={parameters.minimumAmount ?? ''}
-              onChange={(event) => onChange({ minimumAmount: event.target.value ? Number(event.target.value) : undefined })}
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-            />
-          </label>
-
-          <label className="flex items-center gap-3 text-sm font-medium text-slate-700">
-            <input
-              type="checkbox"
-              checked={parameters.includeFees}
-              onChange={(event) => onChange({ includeFees: event.target.checked })}
-              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
-            />
-            Include fees and charges
-          </label>
-
-          <label className="grid gap-2 text-sm font-medium text-slate-700">
-            <span>Custom borrower filter</span>
+            <span>Keyword filter</span>
             <input
               type="text"
               placeholder="Search by borrower, account number, or tag"
@@ -116,6 +77,9 @@ export function ReportParameters({ report, parameters, onChange, onRun, onReset 
               className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </label>
+          <p className="text-xs text-slate-500">
+            Leave blank to run the report for all records within the selected dates.
+          </p>
         </fieldset>
       </form>
 

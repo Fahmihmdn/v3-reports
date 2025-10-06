@@ -51,9 +51,7 @@ const createDefaultParameters = (): ReportParameterState => {
 
   return {
     startDate: formatDateForInput(start),
-    endDate: formatDateForInput(today),
-    status: 'all',
-    includeFees: true
+    endDate: formatDateForInput(today)
   };
 };
 
@@ -86,16 +84,8 @@ function App() {
       return;
     }
 
-    const { startDate, endDate, status, includeFees, minimumAmount, keyword } = parameters;
-    const summaryParts = [
-      `Date range: ${startDate || '—'} to ${endDate || '—'}`,
-      `Status: ${status === 'all' ? 'All statuses' : status.replace('_', ' ')}`,
-      includeFees ? 'Including fees' : 'Excluding fees'
-    ];
-
-    if (minimumAmount) {
-      summaryParts.push(`Minimum amount: ${minimumAmount.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}`);
-    }
+    const { startDate, endDate, keyword } = parameters;
+    const summaryParts = [`Date range: ${startDate || '—'} to ${endDate || '—'}`];
 
     if (keyword) {
       summaryParts.push(`Filter: "${keyword}"`);
@@ -126,7 +116,7 @@ function App() {
             <ReportList reports={reports} selectedReportId={selectedReportId} onSelect={handleSelectReport} />
           </div>
 
-          <div className="min-h-[24rem]">
+          <div className="min-h-[20rem]">
             <ReportParameters
               report={selectedReport}
               parameters={parameters}
