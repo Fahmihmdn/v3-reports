@@ -11,7 +11,8 @@ const reports: ReportDefinition[] = [
     description: 'Understand balances, repayments, and delinquencies across your loan book.',
     longDescription:
       'Track how your overall portfolio is performing with period-over-period comparisons, delinquency rates, and repayments by loan cohort.',
-    tags: ['Overview', 'Executive']
+    tags: ['Overview', 'Executive'],
+    defaultRangeInDays: 30
   },
   {
     id: 'repayment-activity',
@@ -20,7 +21,8 @@ const reports: ReportDefinition[] = [
     description: 'Review all repayments received within a period, grouped by borrower and payment method.',
     longDescription:
       'Export a detailed ledger of repayments, including payer details, transaction references, and outstanding balances before and after each payment.',
-    tags: ['Payments']
+    tags: ['Payments'],
+    defaultRangeInDays: 14
   },
   {
     id: 'upcoming-disbursements',
@@ -29,7 +31,8 @@ const reports: ReportDefinition[] = [
     description: 'Plan your cash flow by seeing every loan scheduled to disburse soon.',
     longDescription:
       'List approved applications and expected release dates so operations can double-check banking details, collateral documents, and compliance tasks before funds go out.',
-    tags: ['Scheduling']
+    tags: ['Scheduling'],
+    defaultRangeInDays: 21
   },
   {
     id: 'arrears-management',
@@ -38,16 +41,18 @@ const reports: ReportDefinition[] = [
     description: 'Prioritise borrowers with overdue payments and coordinate follow-up actions.',
     longDescription:
       'Filter down to severely overdue accounts, view their latest contact attempts, and prepare the data you need for call lists or legal escalations.',
-    tags: ['Delinquency']
+    tags: ['Delinquency'],
+    defaultRangeInDays: 60
   }
 ];
 
 const formatDateForInput = (date: Date) => date.toISOString().split('T')[0];
 
-const createDefaultParameters = (): ReportParameterState => {
+const createDefaultParameters = (rangeInDays = 30): ReportParameterState => {
   const today = new Date();
   const start = new Date(today);
-  start.setDate(today.getDate() - 30);
+  const clampedRange = Number.isFinite(rangeInDays) ? Math.max(rangeInDays - 1, 0) : 0;
+  start.setDate(today.getDate() - clampedRange);
 
   return {
     startDate: formatDateForInput(start),
@@ -57,34 +62,86 @@ const createDefaultParameters = (): ReportParameterState => {
 
 function App() {
   const [selectedReportId, setSelectedReportId] = useState<string | null>(reports[0]?.id ?? null);
-  const [parameters, setParameters] = useState<ReportParameterState>(createDefaultParameters());
-  const [lastRunSummary, setLastRunSummary] = useState<string | null>(null);
+  const [parameterStateByReport, setParameterStateByReport] = useState<Record<string, ReportParameterState>>(() => {
+    return reports.reduce<Record<string, ReportParameterState>>((accumulator, report) => {
+      accumulator[report.id] = createDefaultParameters(report.defaultRangeInDays);
+      return accumulator;
+    }, {});
+  });
+  const [runSummariesByReport, setRunSummariesByReport] = useState<Record<string, string>>({});
 
-  const selectedReport = useMemo<ReportDefinition | null>((): ReportDefinition | null => {
+  const selectedReport = useMemo<ReportDefinition | null>(() => {
     return reports.find((report) => report.id === selectedReportId) ?? null;
   }, [selectedReportId]);
 
+  const activeParameters: ReportParameterState = useMemo(() => {
+    if (selectedReport) {
+      return parameterStateByReport[selectedReport.id] ?? createDefaultParameters(selectedReport.defaultRangeInDays);
+    }
+
+    return createDefaultParameters();
+  }, [parameterStateByReport, selectedReport]);
+
   const isInvalidRange = useMemo(() => {
-    if (!parameters.startDate || !parameters.endDate) {
+    if (!activeParameters.startDate || !activeParameters.endDate) {
       return false;
     }
 
-    return new Date(parameters.startDate) > new Date(parameters.endDate);
-  }, [parameters.endDate, parameters.startDate]);
+    return new Date(activeParameters.startDate) > new Date(activeParameters.endDate);
+  }, [activeParameters.endDate, activeParameters.startDate]);
+
+  const lastRunSummary = useMemo(() => {
+    if (!selectedReport) {
+      return null;
+    }
+
+    return runSummariesByReport[selectedReport.id] ?? null;
+  }, [runSummariesByReport, selectedReport]);
 
   const handleSelectReport = (reportId: string) => {
     setSelectedReportId(reportId);
-    setParameters(createDefaultParameters());
-    setLastRunSummary(null);
+    setParameterStateByReport((previous) => {
+      if (previous[reportId]) {
+        return previous;
+      }
+
+      const report = reports.find((entry) => entry.id === reportId);
+
+      return {
+        ...previous,
+        [reportId]: createDefaultParameters(report?.defaultRangeInDays)
+      };
+    });
   };
 
   const handleParameterChange = (update: Partial<ReportParameterState>) => {
-    setParameters((previous) => ({ ...previous, ...update }));
+    if (!selectedReport) {
+      return;
+    }
+
+    setParameterStateByReport((previous) => ({
+      ...previous,
+      [selectedReport.id]: {
+        ...(previous[selectedReport.id] ?? createDefaultParameters(selectedReport.defaultRangeInDays)),
+        ...update
+      }
+    }));
   };
 
   const handleReset = () => {
-    setParameters(createDefaultParameters());
-    setLastRunSummary(null);
+    if (!selectedReport) {
+      return;
+    }
+
+    setParameterStateByReport((previous) => ({
+      ...previous,
+      [selectedReport.id]: createDefaultParameters(selectedReport.defaultRangeInDays)
+    }));
+    setRunSummariesByReport((previous) => {
+      const updated = { ...previous };
+      delete updated[selectedReport.id];
+      return updated;
+    });
   };
 
   const handleRunReport = () => {
@@ -92,15 +149,18 @@ function App() {
       return;
     }
 
-    const { startDate, endDate } = parameters;
-    const keyword = parameters.keyword?.trim();
+    const { startDate, endDate } = activeParameters;
+    const keyword = activeParameters.keyword?.trim();
     const summaryParts = [`Date range: ${startDate || '—'} to ${endDate || '—'}`];
 
     if (keyword) {
       summaryParts.push(`Filter: "${keyword}"`);
     }
 
-    setLastRunSummary(`Prepared "${selectedReport.name}" with ${summaryParts.join(', ')}.`);
+    setRunSummariesByReport((previous) => ({
+      ...previous,
+      [selectedReport.id]: `Prepared "${selectedReport.name}" with ${summaryParts.join(', ')}.`
+    }));
   };
 
   return (
@@ -128,7 +188,7 @@ function App() {
           <div className="min-h-[20rem]">
             <ReportParameters
               report={selectedReport}
-              parameters={parameters}
+              parameters={activeParameters}
               isInvalidRange={isInvalidRange}
               onChange={handleParameterChange}
               onRun={handleRunReport}

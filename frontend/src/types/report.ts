@@ -5,6 +5,7 @@ export interface ReportDefinition {
   description: string;
   longDescription?: string;
   tags?: string[];
+  defaultRangeInDays?: number;
 }
 
 export interface ReportParameterState {
